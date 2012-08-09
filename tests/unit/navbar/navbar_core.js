@@ -23,9 +23,20 @@
 
 		$("#foo").trigger( "create" );
 
-		same( $ignored.attr( "class" ), undefined, "ignored list doesn't have the grid theme" );
-		same( $enhanced.attr( "class" ).indexOf("ui-grid"), 0, "enhanced list has the grid theme" );
+		deepEqual( $ignored.attr( "class" ), undefined, "ignored list doesn't have the grid theme" );
+		deepEqual( $enhanced.attr( "class" ).indexOf("ui-grid"), 0, "enhanced list has the grid theme" );
 
 		$.mobile.ignoreContentEnabled = false;
+	});
+
+	// Issue #4663
+	asyncTest( "clicks/taps triggered on anything above the link get retriggered on the link", function() {
+		expect( 1 );
+		$( document ).delegate( "li", "vclick", function( event ) {
+			ok($( event.target ).is("a"), "target should always be an anchor" );
+			start();
+		});
+
+		$.mobile.activePage.find( "div:jqmData(role=navbar) li" ).first().trigger( "click" );
 	});
 })(jQuery);

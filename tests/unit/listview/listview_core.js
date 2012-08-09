@@ -353,7 +353,7 @@
 
 	module( "Autodividers Selector" );
 
-	asyncTest( "Adds divider text from links.", function() {
+	asyncTest( "Adds right divider text.", function() {
 		$.testHelper.pageSequence([
 			function() {
 				$.testHelper.openPage( '#autodividers-selector-test' );
@@ -363,18 +363,18 @@
 				var $new_page = $( '#autodividers-selector-test' );
 				ok($new_page.hasClass( 'ui-page-active' ));
 
-				// check we have the right dividers based on link text
+				// check we have the right dividers
 				var $list = $( '#autodividers-selector-test-list1' );
 				ok( $list.find( '.ui-li-divider' ).length === 4 );
-				ok( $list.find( '.ui-li-divider:eq(0):contains(A)' ).length === 1 );
-				ok( $list.find( '.ui-li-divider:eq(1):contains(B)' ).length === 1 );
-				ok( $list.find( '.ui-li-divider:eq(2):contains(C)' ).length === 1 );
-				ok( $list.find( '.ui-li-divider:eq(3):contains(D)' ).length === 1 );
+				ok( $list.find( '.ui-li-divider' ).eq(0).is( ':contains(A)' ) );
+				ok( $list.find( '.ui-li-divider' ).eq(1).is( ':contains(B)' ) );
+				ok( $list.find( '.ui-li-divider' ).eq(2).is( ':contains(C)' ) );
+				ok( $list.find( '.ui-li-divider' ).eq(3).is( ':contains(D)' ) );
 
-				// check that adding a new item with link creates the right divider
-				$list.append( '<li><a href="">e is for ethel</a></li>' );
+				// check that adding a new item creates the right divider
+				$list.append( '<li><a href="#">e is for ethel</a></li>' );
 				$list.listview('refresh');
-				ok( $list.find( '.ui-li-divider:eq(4):contains(E)' ).length === 1 );
+				ok( $list.find( '.ui-li-divider' ).eq(4).is( ':contains(E)' ) );
 
 				start();
 			}
@@ -398,19 +398,20 @@
           text = text.slice( 0, 1 ).toUpperCase();
           return text;
 				});
+
 				$list.listview( 'refresh' );
 				ok( $list.find( '.ui-li-divider' ).length === 4 );
-				ok( $list.find( '.ui-li-divider:eq(0):contains(E)' ).length === 1 );
-				ok( $list.find( '.ui-li-divider:eq(1):contains(F)' ).length === 1 );
-				ok( $list.find( '.ui-li-divider:eq(2):contains(G)' ).length === 1 );
-				ok( $list.find( '.ui-li-divider:eq(3):contains(H)' ).length === 1 );
+				ok( $list.find( '.ui-li-divider').eq(0).is( ':contains(E)' ) );
+				ok( $list.find( '.ui-li-divider').eq(1).is( ':contains(F)' ) );
+				ok( $list.find( '.ui-li-divider').eq(2).is( ':contains(G)' ) );
+				ok( $list.find( '.ui-li-divider').eq(3).is( ':contains(H)' ) );
 
 				// check that adding a new item creates the right divider
 				$list.append( '<li><div><span class="autodividers-selector-test-selectme">' +
 				'i is for impy</span></div></li>' );
 				$list.listview( 'refresh' );
 
-				ok( $list.find( '.ui-li-divider:eq(4):contains(I)' ).length === 1 );
+				ok( $list.find( '.ui-li-divider').eq(4).is( ':contains(I)' ) );
 
 				start();
 			}
@@ -433,7 +434,7 @@
 				$searchPage.find('input').val('at');
 				$searchPage.find('input').trigger('change');
 
-				same($searchPage.find('li.ui-screen-hidden').length, 2);
+				deepEqual($searchPage.find('li.ui-screen-hidden').length, 2);
 				start();
 			}
 		]);
@@ -450,7 +451,7 @@
 				$searchPage.find('input').val('a');
 				$searchPage.find('input').trigger('change');
 
-				same($searchPage.find("li[style^='display: none;']").length, 0);
+				deepEqual($searchPage.find("li[style^='display: none;']").length, 0);
 				start();
 			}
 		]);
@@ -467,7 +468,7 @@
                 $searchPage.find('input').val('*');
                 $searchPage.find('input').trigger('change');
 
-                same($searchPage.find('li.ui-screen-hidden').length, 4);
+                deepEqual($searchPage.find('li.ui-screen-hidden').length, 4);
                 start();
             }
         ]);
@@ -495,13 +496,13 @@
 				$searchPage.find('input').trigger('change');
 				setTimeout(function() {
 					//there should be four hidden list entries
-					same($searchPage.find('li.ui-screen-hidden').length, 4);
+					deepEqual($searchPage.find('li.ui-screen-hidden').length, 4);
 
 					//there should be two list entries that are list dividers and hidden
-					same($searchPage.find('li.ui-screen-hidden:jqmData(role=list-divider)').length, 2);
+					deepEqual($searchPage.find('li.ui-screen-hidden:jqmData(role=list-divider)').length, 2);
 
 					//there should be two list entries that are not list dividers and hidden
-					same($searchPage.find('li.ui-screen-hidden:not(:jqmData(role=list-divider))').length, 2);
+					deepEqual($searchPage.find('li.ui-screen-hidden:not(:jqmData(role=list-divider))').length, 2);
 					start();
 				}, 1000);
 			}
@@ -519,8 +520,8 @@
 				$('.ui-page-active input').trigger('change');
 
 				setTimeout(function() {
-					same($('.ui-page-active input').val(), 'a');
-					same($('.ui-page-active li[style^="display: none;"]').length, 0);
+					deepEqual($('.ui-page-active input').val(), 'a');
+					deepEqual($('.ui-page-active li[style^="display: none;"]').length, 0);
 					start();
 				}, 1000);
 			}
@@ -540,9 +541,9 @@
 				$page.find('input').trigger('change');
 
 				setTimeout(function() {
-					same($page.find('li:jqmData(role=list-divider):hidden').length, 2);
-					same($page.find('li:jqmData(role=list-divider):hidden + li:not(:jqmData(role=list-divider)):hidden').length, 2);
-					same($page.find('li:jqmData(role=list-divider):not(:hidden) + li:not(:jqmData(role=list-divider)):not([:hidden)').length, 2);
+					deepEqual($page.find('li:jqmData(role=list-divider):hidden').length, 2);
+					deepEqual($page.find('li:jqmData(role=list-divider):hidden + li:not(:jqmData(role=list-divider)):hidden').length, 2);
+					deepEqual($page.find('li:jqmData(role=list-divider):not(:hidden) + li:not(:jqmData(role=list-divider)):not(:hidden)').length, 2);
 					start();
 				}, 1000);
 			}
@@ -680,19 +681,19 @@
 				for( var t = 0; t<3; t++){
 					ul.append("<li>Item " + t + "</li>");
 					ul.listview('refresh');
-					equals(ul.find(".ui-corner-top").length, 1, "There should be only one element with class ui-corner-top");
-					equals(ul.find("li:visible").first()[0], ul.find(".ui-corner-top")[0], "First list item should have class ui-corner-top in list with " + ul.find("li").length + " item(s)");
-					equals(ul.find(".ui-corner-bottom").length, 1, "There should be only one element with class ui-corner-bottom");
-					equals(ul.find("li:visible").last()[0], ul.find(".ui-corner-bottom")[0], "Last list item should have class ui-corner-bottom in list with " + ul.find("li").length + " item(s)");
+					equal(ul.find(".ui-corner-top").length, 1, "There should be only one element with class ui-corner-top");
+					equal(ul.find("li:visible").first()[0], ul.find(".ui-corner-top")[0], "First list item should have class ui-corner-top in list with " + ul.find("li").length + " item(s)");
+					equal(ul.find(".ui-corner-bottom").length, 1, "There should be only one element with class ui-corner-bottom");
+					equal(ul.find("li:visible").last()[0], ul.find(".ui-corner-bottom")[0], "Last list item should have class ui-corner-bottom in list with " + ul.find("li").length + " item(s)");
 				}
 
 				ul.find( "li" ).first().hide();
 				ul.listview( "refresh" );
-				equals(ul.find("li:visible").first()[0], ul.find(".ui-corner-top")[0], "First visible list item should have class ui-corner-top");
+				equal(ul.find("li:visible").first()[0], ul.find(".ui-corner-top")[0], "First visible list item should have class ui-corner-top");
 
 				ul.find( "li" ).last().hide();
 				ul.listview( "refresh" );
-				equals(ul.find("li:visible").last()[0], ul.find(".ui-corner-bottom")[0], "Last visible list item should have class ui-corner-bottom");
+				equal(ul.find("li:visible").last()[0], ul.find(".ui-corner-bottom")[0], "Last visible list item should have class ui-corner-bottom");
 
 				start();
 			}
@@ -731,7 +732,7 @@
 			},
 
 			function(){
-				same( findNestedPages( "#uncached-nested-list" ).length, 0 );
+				deepEqual( findNestedPages( "#uncached-nested-list" ).length, 0 );
 				start();
 			}
 		]);
@@ -777,7 +778,7 @@
 			},
 
 			function(){
-				same( $("#cached-nested-list").length, 1 );
+				deepEqual( $("#cached-nested-list").length, 1 );
 				$.mobile.changePage( home );
 			},
 
@@ -786,7 +787,7 @@
 			},
 
 			function(){
-				same( $("#cached-nested-list").length, 1 );
+				deepEqual( $("#cached-nested-list").length, 1 );
 				start();
 			}
 		]);
@@ -849,7 +850,7 @@
 		$.testHelper.pageSequence([
 			function() {
 				// open the nested list page
-				same( $("div#nested-list-test").length, 1 );
+				deepEqual( $("div#nested-list-test").length, 1 );
 				$( "a#nested-list-test-anchor" ).click();
 			},
 
@@ -860,7 +861,7 @@
 
 			function() {
 				// make sure the page is still in place
-				same( $("div#nested-list-test").length, 1 );
+				deepEqual( $("div#nested-list-test").length, 1 );
 				start();
 			}
 		]);
@@ -894,7 +895,7 @@
 
 			function( timedOut) {
 				ok( !timedOut );
-				same( $.mobile.activePage.find("form.ui-listview-filter-inset").length, 1, "form is inset");
+				deepEqual( $.mobile.activePage.find("form.ui-listview-filter-inset").length, 1, "form is inset");
 				window.history.back();
 			},
 
@@ -913,7 +914,7 @@
 
 			function( timedOut) {
 				ok( !timedOut );
-				same( $.mobile.activePage.find("form.ui-listview-filter-inset").length, 1, "form is inset");
+				deepEqual( $.mobile.activePage.find("form.ui-listview-filter-inset").length, 1, "form is inset");
 				window.history.back();
 			},
 
@@ -932,7 +933,7 @@
 					var $elem = $(elem),
 						order = [ "star", "plug", "delete", "plug" ];
 
-					same( $elem.find("span.ui-icon-" + order[i]).length, 1, "there should be one " + order[i] + " icon" );
+					deepEqual( $elem.find("span.ui-icon-" + order[i]).length, 1, "there should be one " + order[i] + " icon" );
 				});
 
 				window.history.back();
@@ -949,7 +950,7 @@
 			},
 
 			function() {
-				same($.mobile.activePage.find("#ignored-link .ui-btn-inner").length, 0, "no buttons in list dividers");
+				deepEqual($.mobile.activePage.find("#ignored-link .ui-btn-inner").length, 0, "no buttons in list dividers");
 
 				window.history.back();
 			},
@@ -959,7 +960,7 @@
 	});
 
 	module( "Borders" );
-		
+
 	asyncTest( "last list item has border-bottom", function() {
 		$.testHelper.pageSequence([
 			function() {
@@ -967,16 +968,16 @@
 			},
 
 			function() {
-				same($.mobile.activePage.find(".listitem").css("border-bottom-width"), "0px", "has no border bottom");
-				same($.mobile.activePage.find("#lastitem").css("border-bottom-width"), "1px", "has border bottom");
+				deepEqual($.mobile.activePage.find(".listitem").css("border-bottom-width"), "0px", "has no border bottom");
+				deepEqual($.mobile.activePage.find("#lastitem").css("border-bottom-width"), "1px", "has border bottom");
 
 				window.history.back();
 			},
-			
+
 			start
 		]);
 	});
-	
+
 	asyncTest( "list inside collapsible content", function() {
 		$.testHelper.pageSequence([
 			function() {
@@ -984,14 +985,14 @@
 			},
 
 			function() {
-				same($.mobile.activePage.find("#noninsetlastli").css("border-bottom-width"), "0px", "last li non-inset list has no border bottom");
-				same($.mobile.activePage.find("#insetlastli").css("border-bottom-width"), "1px", "last li inset list has border bottom");
+				deepEqual($.mobile.activePage.find("#noninsetlastli").css("border-bottom-width"), "0px", "last li non-inset list has no border bottom");
+				deepEqual($.mobile.activePage.find("#insetlastli").css("border-bottom-width"), "1px", "last li inset list has border bottom");
 
 				window.history.back();
 			},
-			
+
 			start
 		]);
 	});
-	
+
 })(jQuery);

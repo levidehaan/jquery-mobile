@@ -49,6 +49,33 @@ define( [
 			//
 			urlParseRE: /^(((([^:\/#\?]+:)?(?:(\/\/)((?:(([^:@\/#\?]+)(?:\:([^:@\/#\?]+))?)@)?(([^:\/#\?\]\[]+|\[[^\/\]@#?]+\])(?:\:([0-9]+))?))?)?)?((\/?(?:[^\/\?#]+\/+)*)([^\?#]*)))?(\?[^#]+)?)(#.*)?/,
 
+			// Abstraction to address xss (Issue #4787) in browsers that auto decode the username:pass
+			// portion of location.href. All references to location.href should be replaced with a call
+			// to this method so that it can be dealt with properly here
+			getLocation: function( url ) {
+				var uri = this.parseUrl( url || location.href ),
+					encodedUserPass = "";
+
+				if( uri.username ){
+					encodedUserPass = encodeURI( uri.username );
+				}
+
+				if( uri.password  ){
+					encodedUserPass = encodedUserPass + ":" + encodeURI( uri.password );
+				}
+
+				if( encodedUserPass ){
+					return uri.protocol + "//" + encodedUserPass + "@" +
+						uri.host + uri.pathname + uri.search + uri.hash;
+				}
+
+				return uri.href;
+			},
+
+			parseLocation: function() {
+				return this.parseUrl( this.getLocation() );
+			},
+
 			//Parse a URL into a structure that allows easy access to
 			//all of the URL components by name.
 			parseUrl: function( url ) {
@@ -369,7 +396,7 @@ define( [
 		$base = $head.children( "base" ),
 
 		//tuck away the original document URL minus any fragment.
-		documentUrl = path.parseUrl( location.href ),
+		documentUrl = path.parseLocation(),
 
 		//if the document has an embedded base tag, documentBase is set to its
 		//initial value. If a base tag does not exist, then we default to the documentUrl.
@@ -1085,7 +1112,9 @@ define( [
 				alreadyThere = true;
 			}
 
-			url = ( active.url || "" ) + dialogHashKey;
+			// Normally, we tack on a dialog hash key, but if this is the location of a stale dialog,
+			// we reuse the URL from the entry
+			url = ( active.url || "" ) + ( alreadyThere ? "" : dialogHashKey );
 
 			// tack on another dialogHashKey if this is the same as the initial hash
 			// this makes sure that a history entry is created for this dialog
@@ -1118,7 +1147,11 @@ define( [
 			( isDialog ? $.mobile.defaultDialogTransition : $.mobile.defaultPageTransition );
 
 		//add page to history stack if it's not back or forward
-		if ( !historyDir && !alreadyThere ) {
+		if ( !historyDir ) {
+			// Overwrite the current entry if it's a leftover from a dialog
+			if ( alreadyThere ) {
+				urlHistory.activeIndex = Math.max( 0, urlHistory.activeIndex - 1 );
+			}
 			urlHistory.addNew( url, settings.transition, pageTitle, pageUrl, settings.role );
 		}
 
@@ -1500,7 +1533,7 @@ define( [
 		$window.bind( "hashchange", function( e, triggered ) {
 			// Firefox auto-escapes the location.hash as for v13 but
 			// leaves the href untouched
-			$.mobile._handleHashChange( path.parseUrl(location.href).hash );
+			$.mobile._handleHashChange( path.parseLocation().hash );
 		});
 
 		//set page min-heights to be device specific

@@ -1,14 +1,15 @@
 //>>excludeStart("jqmBuildExclude", pragmas.jqmBuildExclude);
 //>>description: Generates dividers for listview items
 //>>label: Listview Autodividers
+//>>group: Widgets
 define( [ "jquery", "./listview" ], function( $ ) {
 //>>excludeEnd("jqmBuildExclude");
 (function( $, undefined ) {
 
 $.mobile.listview.prototype.options.autodividers = false;
 $.mobile.listview.prototype.options.autodividersSelector = function( elt ) {
-	// look for the first anchor in the item
-	var text = elt.find( 'a' ).text() || elt.text() || null;
+	// look for the text in the given element
+	var text = elt.text() || null;
 
 	if ( !text ) {
 		return null;

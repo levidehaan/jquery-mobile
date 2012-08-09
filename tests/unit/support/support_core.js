@@ -46,6 +46,18 @@ $.testHelper.excludeFileProtocol(function(){
 		});
 	});
 
+	asyncTest( "detects touch", function() {
+		$.extend(window, {
+			touchend: true
+		});
+
+		$.testHelper.reloadModule( "jquery.mobile.support.touch" ).done( function() {
+			ok( $.mobile.support.touch, "touch is supported" );
+			ok( $.support.touch, "touch is supported" );
+			start();
+		});
+	});
+
 	asyncTest( "detects functionality from basic negative properties and attributes (where possible)", function(){
 		delete window["orientation"];
 
@@ -91,10 +103,10 @@ $.testHelper.excludeFileProtocol(function(){
 		 	 jqmdetectedver = $.mobile.browser.ie;
 
 		 	if( ie ){
-		 		same(version, jqmdetectedver, "It's IE and the version is correct");
+		 		deepEqual(version, jqmdetectedver, "It's IE and the version is correct");
 		 	}
 		 	else{
-		 		same(ie, jqmdetectedver, "It's not IE");
+		 		deepEqual(ie, jqmdetectedver, "It's not IE");
 		 	}
 			start();
 		});
